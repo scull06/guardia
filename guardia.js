@@ -1,10 +1,9 @@
 'use strict';
 const Trait = require('traits.js');
 const _ = require('lodash');
-const Reflect = require('harmony-reflect');
-const Utils = require('./utils');
+//const Reflect = require('harmony-reflect');
+//const Utils = require('./utils');
 
-//Refactor this to better security... but; i'm using 'const' why i should refactor then? what is the point on doing that?
 const globalStates = new Map();
 
 const getState = function (key) {
