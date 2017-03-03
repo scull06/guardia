@@ -2,7 +2,7 @@
 const Trait = require('traits.js');
 const _ = require('lodash');
 //const Reflect = require('harmony-reflect');
-//const Utils = require('./utils');
+const Utils = require('./utils');
 
 const globalStates = new Map();
 
@@ -236,35 +236,38 @@ const installPolicyX = function (policy) {
                     get: function (tar, property, receiver) {
                         if (tar[property] instanceof Function) {
                             return function (...args) {
-                                if(policy['whenRead']){
+                                if (policy['whenRead']) {
                                     for (let pol of policy['whenRead']) {
                                         if (!pol.filter(tar, property, receiver, args, 'call')) {
                                             throw new Error('Read of [' + property + '] is not allowed!');
                                         }
                                     }
                                 }
+                                notify(policy['readListeners'], tar, property, undefined, args);
                                 return tar[property](...args)
                             }
                         } else {
 
-                            if(policy['whenRead']){
+                            if (policy['whenRead']) {
                                 for (let pol of policy['whenRead']) {
                                     if (!pol.filter(tar, property, receiver, 'propertyRead')) {
                                         throw new Error('Read of [' + property + '] is not allowed!');
                                     }
                                 }
                             }
+                            notify(policy['readListeners'], tar, property, undefined, undefined);
                             return Reflect.get(tar, property, receiver);
                         }
                     },
                     set: function (target, property, value, receiver) {
-                        if(policy['whenWrite']){
+                        if (policy['whenWrite']) {
                             for (let pol of policy['whenWrite']) {
                                 if (!pol.filter(target, property, receiver, value, 'call')) {
                                     throw new Error('Write to [' + property + '] is not allowed!');
                                 }
                             }
-                       }
+                        }
+                        notify(policy['writesListeners'], target, property, undefined, value);
                         return Reflect.set(target, property, value, receiver);
                     }
                 });
@@ -313,4 +316,6 @@ exports.Not = Not;
 exports.ParamInList = ParamInList;
 exports.ParamAt = ParamAt;
 exports.StateFnParam = StateFnParam;
+exports.setState = setState
+exports.getState = getState
 

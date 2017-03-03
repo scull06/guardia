@@ -1,6 +1,6 @@
 
-test.js
+testManual/
 
-test/test1.js
+node_modules/
 
-a.js
+.vscode/
