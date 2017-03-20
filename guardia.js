@@ -118,12 +118,9 @@ const Or = function (...policies) {
 }
 
 const Allow = function (properties) {
-
     var proto = basePrototype();
     proto.allowedProperties = properties;
-
     var allowedPropPolicy = Trait.create(proto, TAllow);
-    // allowedPropPolicy.allowedProperties =  properties; // just add a property to the object
     return allowedPropPolicy;
 }
 
@@ -318,4 +315,3 @@ exports.ParamAt = ParamAt;
 exports.StateFnParam = StateFnParam;
 exports.setState = setState
 exports.getState = getState
-
