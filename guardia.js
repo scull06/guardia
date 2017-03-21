@@ -18,17 +18,15 @@ function basePrototype() {
     return {};
 }
 
-//I dont know if I should use let or const for this.. I'll see implications later!!!
-let TBase = Trait({
-    filter: Trait.required
-});
+// I dont know if I should use let or const for this.. I'll see implications
+// later!!!
+let TBase = Trait({filter: Trait.required});
 
 let TAllow = Trait.compose(TBase, Trait({
     filter: function (tar, prop, rec, args) {
         return Utils.contains(this.allowedProperties, prop) !== undefined
     }
 }));
-
 
 let TParamAt = Trait.compose(TBase, Trait({
 
@@ -41,10 +39,33 @@ let TParamAt = Trait.compose(TBase, Trait({
         if (opType === 'readProperty') {
             return true;
         }
-        return this.operatorFn(args[this.idxParam], this.otherParam);
+        /**
+         * document.createElement(stringOf(fakeDiv))
+         * apply(p,t,args){
+         *  if(policy.filter(...)) should change args to the desired type-value in the policy and use it subsequently
+         *  return p.apply(t,args)
+         * }
+         */
+        let newVal = this.idxParam(args);
+        return this.operatorFn(newVal, this.otherParam);
     }
 }));
 
+/**
+ * This function is used to prevent abusing toString and valueOf (we should look at other functions like that)
+ * 
+ * example of usage: ParamAt(equals, getVType(0,String), 'iframe')
+ * 
+ * Be sure that the type parameter returns a primitive object (string, number,...)
+ */
+
+const getVType = (idx, type) => {
+    return (array) => {
+        let val = type(array[idx]);
+        array[idx] = val;
+        return val;
+    }
+}
 
 function ParamAt(fn, idx, other) {
     var paramPrototype = basePrototype();
@@ -134,14 +155,16 @@ const ParamInList = function (idx, list) {
     return ParamAt(Utils.inList, idx, list);
 }
 
-
-//**************************************************************************************************************************************
-//**************************************************************************************************************************************
-//************************                CODE TO TAKE CARE OF BUT....;              **************************************************
-//**************************************************************************************************************************************
-//**************************************************************************************************************************************
-
-
+// *****************************************************************************
+// * ********************************************************
+// *****************************************************************************
+// * ********************************************************
+// ************************                CODE TO TAKE CARE OF BUT....;
+// **************************************************
+// *****************************************************************************
+// * ********************************************************
+// *****************************************************************************
+// * ********************************************************
 
 const findPropertyOwner = function (obj, prop) {
     do {
@@ -170,7 +193,8 @@ const installPolicyX = function (policy) {
 
     return {
         on: function (target) {
-            //!!!!!!!!!!!   iterar una sola vez cuando funcione las polizas en la properties !!!!!!!!!!!!!!!... 
+            // !!!!!!!!!!!   iterar una sola vez cuando funcione las polizas en la
+            // properties !!!!!!!!!!!!!!!...
             let methods = [];
             let properties = [];
 
@@ -189,15 +213,14 @@ const installPolicyX = function (policy) {
                     if (owner) {
                         var pd = Reflect.getOwnPropertyDescriptor(owner, x);
                         if (pd.configurable && pd.set && !pd.value) {
-                            var m = Reflect.defineProperty(target, x,
-                                {
-                                    get: () => {
-                                        return target.x;
-                                    },
-                                    set: (value) => {
-                                        target.x = value
-                                    }
-                                })
+                            var m = Reflect.defineProperty(target, x, {
+                                get: () => {
+                                    return target.x;
+                                },
+                                set: (value) => {
+                                    target.x = value
+                                }
+                            })
                         }
                     }
                 }
@@ -214,24 +237,26 @@ const installPolicyX = function (policy) {
                                     }
                                 }
                             }
-                            //updating listeners 
+                            //updating listeners
                             notify(policy['readListeners'], target, method, undefined, arglist);
                             return targetFn.apply(thisArg, arglist);
                         }
                     });
 
-                    fnProxy.toString = Function.prototype.toString.bind(target[method]) //Proxies invariants flaws!!!! 
+                    fnProxy.toString = Function
+                        .prototype
+                        .toString
+                        .bind(target[method]) //Proxies invariants flaws!!!!
                     target[method] = fnProxy;
                 }
 
                 return target;
 
             } else {
-                // console.log('no es built in!!');
-                // install the policy in not builtin objects.
+                // console.log('no es built in!!'); install the policy in not builtin objects.
                 return new Proxy(target, {
                     get: function (tar, property, receiver) {
-                        if (tar[property] instanceof Function) {
+                        if (tar[property]instanceof Function) {
                             return function (...args) {
                                 if (policy['whenRead']) {
                                     for (let pol of policy['whenRead']) {
@@ -279,7 +304,6 @@ const installPolicyX = function (policy) {
     }
 }
 
-
 var installPolicyCons = function (policy, targetFn) {
     if (targetFn instanceof Function) {
         var proxy = new Proxy(targetFn, {
@@ -296,12 +320,6 @@ var installPolicyCons = function (policy, targetFn) {
 }
 
 
-//**************************************************************************************************************************************
-//**************************************************************************************************************************************
-//************************                 END OF ENFORCEMENT PIECE OF S...T!              *********************************************
-//**************************************************************************************************************************************
-//**************************************************************************************************************************************
-
 
 exports.installPolicy = installPolicyX;
 exports.installPolicyCons = installPolicyCons;
@@ -313,5 +331,6 @@ exports.Not = Not;
 exports.ParamInList = ParamInList;
 exports.ParamAt = ParamAt;
 exports.StateFnParam = StateFnParam;
-exports.setState = setState
-exports.getState = getState
+exports.setState = setState;
+exports.getState = getState;
+exports.getVType = getVType;
