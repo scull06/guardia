@@ -4,3 +4,7 @@ testManual/
 node_modules/
 
 .vscode/
+
+crap.js
+
+jsconfig.json
