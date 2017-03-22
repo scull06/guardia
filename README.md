@@ -34,6 +34,48 @@ ParamAt((...ps)=> Boolean, pIdx: Number, arr :  Array<Any>) => TBase | Apply a f
 StateFnParam((...ps)=> Boolean,s:  String, arr :  Array<Any>) => TBase | Apply a function to one state during an execution step
 getVType(idx: Number, fn : Function) => Object | Returns an object in the following way ```fn(params[idx])```, where params is injected by the enforcement mechanism.
 
+### Policy Specification
+To declare a policy you should make a property using the constructs provided by Guardia. For example, let say that the execution of **alert()** is forbidden in or application. For this we can use **Deny** or a combination of **Not(Allow(...))**.
+
+```javascript
+const denyAlert = G.Deny(['alert']);
+const denyAlert2 = G.Not(G.Allow(['alert']));
+```
+Declaring a property is not enough, you need to deploy in the object that you want to protect. To do that you need to use `installPolicy(policyObj)` method. This method receive a policy configuration object that contains four fields. `installPolicy(policyObj)` returns an object that contains `on(target)` method that receive the object that you want to protect.
+
+```javascript
+ const policyObj = {
+     whenRead : [denyAlert]
+     //whenWrite : [..]
+     //readListeners : [..]
+     //writeListeners : [..]
+ }
+
+protectedTarget = G.installPolicy(policyObject).on(target);
+```
+
+### Allow
+
+```javascript
+const allowedProperties = G.Allow(['prop1', 'prop2', 'method1']);
+```
+### Deny
+
+```javascript
+const forbiddenProperties = G.Deny(['private1', 'private2', 'privateMethod1']);
+```
+### Not
+
+```javascript
+const forbiddenProperties = G.Not(G.Allow((['private1', 'private2', 'privateMethod1']));
+```
+### ParamAt
+
+```javascript
+const noIframeCreation = G.Not(G.And(G.Allow(['createElement']),G.ParamAt(equals, G.getVType(0, String),'iframe')));
+```
+
+
 ### Example # 1
 Te first example aims to prevent the creation of boxes like ```alert()```.
  
