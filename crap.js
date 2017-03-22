@@ -21,5 +21,21 @@ document = ac.installPolicy({
 
 let obj = document.createElement(liar);
 
-console.log(obj);
+let account = {
+    amount: 1000,
+    balance(){
+        return this.amount;
+    },
+    deposit(x){
+        this.amount = this.amount + x;
+    }
+}
 
+const justAllow = ac.Allow(['balance']);
+const noOverride = ac.Not(ac.Allow(['amount','balance','deposit']));
+let protectedAccount = ac.installPolicy({
+    whenRead: [justAllow],
+    whenWrite:[noOverride]
+}).on(account);
+
+protectedAccount.amount = 12
