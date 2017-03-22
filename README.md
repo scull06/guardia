@@ -21,6 +21,18 @@ Guardia is an internal DSL as such you need an entry point to the features offer
 'use strict';
 const G = require('./guardia');
 ```
+Guardia's API comprises a set of properties and a set of combinators that allows to compose those properties in more complex ones.
+
+Construct | Description
+-------------------------------------|-----------------------------------------------------
+Allow(arr : Array<String>) => TBase | Allow the execution of the supplied properties 
+Deny(arr :  Array<String>) => TBase | Deny the execution of the supplied properties 
+Not(p:  TBase) => TBase | Negates the result of the policy given as parameter
+And(pArr:  Array<TBase>) => TBase | Perform logical AND using policies given as parameters
+Or(pArr:  Array<TBase>) => TBase | Perform logical OR using policies given as parameters  
+ParamAt((...ps)=> Boolean, pIdx: Number, arr :  Array<Any>) => TBase | Apply a function to one parameter of the actual execution 
+StateFnParam((...ps)=> Boolean,s:  String, arr :  Array<Any>) => TBase | Apply a function to one state during an execution step
+getVType(idx: Number, fn : Function) => Object | Returns an object in the following way ```fn(params[idx])```, where params is injected by the enforcement mechanism.
 
 ### Example # 1
 Te first example aims to prevent the creation of boxes like ```alert()```.
