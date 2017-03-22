@@ -65,9 +65,9 @@ console.log(protectedAccount.amount); // throws exception
 In the previous example we are able to protect the ```account``` object. But we desire to prevent negative values flowing to ```deposit()```. For this knd of behavior GUARDIA provide us with ```ParamAt()```.
 
 ```javascript
-const ge = (a,b) => { return a > b } 
+const ge = (a,b) => { return a > b };
 const justAllow = G.Or(G.Allow(['balance']),
-                        G.And(G.Allow(['deposit']),G.ParamAt(isPositive,G.getVType(0,Number),0)));
+                        G.And(G.Allow(['deposit']),G.ParamAt(ge,G.getVType(0,Number),0)));
 const noOverride = G.Not(G.Allow(['amount','balance','deposit']));
 
 account = G.installPolicy({
@@ -75,5 +75,5 @@ account = G.installPolicy({
       whenWrite:[noOverride]
 }).on(account);
 
-account.deposit(-120); // throws an execption
+account.deposit(-12); // throws an execption
 ```
