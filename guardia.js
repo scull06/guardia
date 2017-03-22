@@ -208,7 +208,7 @@ const installPolicyX = function (policy) {
                     }
                 }
                 //still work todo here
-                for (let x of properties) {
+               /* for (let x of properties) {
                     let owner = findPropertyOwner(target, x);
                     if (owner) {
                         var pd = Reflect.getOwnPropertyDescriptor(owner, x);
@@ -223,7 +223,7 @@ const installPolicyX = function (policy) {
                             })
                         }
                     }
-                }
+                }*/
 
                 //proxy on methods
                 for (let method of methods) {

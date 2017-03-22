@@ -75,7 +75,6 @@ const forbiddenProperties = G.Not(G.Allow((['private1', 'private2', 'privateMeth
 const noIframeCreation = G.Not(G.And(G.Allow(['createElement']),G.ParamAt(equals, G.getVType(0, String),'iframe')));
 ```
 
-
 ### Example # 1
 Te first example aims to prevent the creation of boxes like ```alert()```.
  
