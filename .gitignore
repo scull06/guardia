@@ -5,6 +5,8 @@ node_modules/
 
 .vscode/
 
+cooking/
+
 crap.js
 
 jsconfig.json

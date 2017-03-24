@@ -6,29 +6,31 @@ const Utils = require('./utils');
 
 const globalStates = new Map();
 
-const getState = function (key) {
+const getState = (key) => {
     return globalStates.get(key);
 }
 
-const setState = function (key, value) {
+const setState = (key, value) => {
     globalStates.set(key, value);
 }
 
-function basePrototype() {
+const basePrototype = () => {
     return {};
 }
 
+const targets = new WeakMap();
+
 // I dont know if I should use let or const for this.. I'll see implications
 // later!!!
-let TBase = Trait({filter: Trait.required});
+const TBase = Trait({ filter: Trait.required });
 
-let TAllow = Trait.compose(TBase, Trait({
+const TAllow = Trait.compose(TBase, Trait({
     filter: function (tar, prop, rec, args) {
         return Utils.contains(this.allowedProperties, prop) !== undefined
     }
 }));
 
-let TParamAt = Trait.compose(TBase, Trait({
+const TParamAt = Trait.compose(TBase, Trait({
 
     idxParam: Trait.required,
     otherParam: Trait.required,
@@ -53,9 +55,7 @@ let TParamAt = Trait.compose(TBase, Trait({
 
 /**
  * This function is used to prevent abusing toString and valueOf (we should look at other functions like that)
- * 
  * example of usage: ParamAt(equals, getVType(0,String), 'iframe')
- * 
  * Be sure that the type parameter returns a primitive object (string, number,...)
  */
 
@@ -67,7 +67,7 @@ const getVType = (idx, type) => {
     }
 }
 
-function ParamAt(fn, idx, other) {
+const ParamAt = (fn, idx, other) => {
     var paramPrototype = basePrototype();
 
     paramPrototype.operatorFn = fn;
@@ -77,7 +77,7 @@ function ParamAt(fn, idx, other) {
     return Trait.create(paramPrototype, TParamAt);
 }
 
-var TStateOverParams = Trait.compose(TBase, Trait({
+const TStateOverParams = Trait.compose(TBase, Trait({
 
     stateKey: Trait.required,
     operatorFn: Trait.required,
@@ -90,7 +90,7 @@ var TStateOverParams = Trait.compose(TBase, Trait({
     }
 }));
 
-function StateFnParam(fn, key, param) {
+const StateFnParam = (fn, key, param) => {
 
     var stateParamPrototype = basePrototype()
 
@@ -101,7 +101,7 @@ function StateFnParam(fn, key, param) {
     return Trait.create(stateParamPrototype, TStateOverParams);
 }
 
-//Policy Combinators
+
 const And = function (...policies) {
     return Trait.create(basePrototype(), Trait.compose(TBase, Trait({
         filter: function (tar, prop, rec, args) {
@@ -155,17 +155,6 @@ const ParamInList = function (idx, list) {
     return ParamAt(Utils.inList, idx, list);
 }
 
-// *****************************************************************************
-// * ********************************************************
-// *****************************************************************************
-// * ********************************************************
-// ************************                CODE TO TAKE CARE OF BUT....;
-// **************************************************
-// *****************************************************************************
-// * ********************************************************
-// *****************************************************************************
-// * ********************************************************
-
 const findPropertyOwner = function (obj, prop) {
     do {
         if (obj.hasOwnProperty(prop)) {
@@ -181,7 +170,7 @@ const isBuiltin = function (obj) {
     return false;
 }
 
-const installPolicyX = function (policy) {
+const installPolicy = (policy) => {
 
     let notify = (listeners, target, method, receiver, arglist) => {
         if (listeners) {
@@ -208,7 +197,7 @@ const installPolicyX = function (policy) {
                     }
                 }
                 //still work todo here
-               /* for (let x of properties) {
+                /* for (let x of properties) {
                     let owner = findPropertyOwner(target, x);
                     if (owner) {
                         var pd = Reflect.getOwnPropertyDescriptor(owner, x);
@@ -256,7 +245,7 @@ const installPolicyX = function (policy) {
                 // console.log('no es built in!!'); install the policy in not builtin objects.
                 return new Proxy(target, {
                     get: function (tar, property, receiver) {
-                        if (tar[property]instanceof Function) {
+                        if (tar[property] instanceof Function) {
                             return function (...args) {
                                 if (policy['whenRead']) {
                                     for (let pol of policy['whenRead']) {
@@ -309,7 +298,7 @@ var installPolicyCons = function (policy, targetFn) {
         var proxy = new Proxy(targetFn, {
             construct: function (target, params, newTarget) {
                 let image = Reflect.construct(target, params, newTarget);
-                image = installPolicyX(policy).on(image);
+                image = installPolicy(policy).on(image);
                 return image;
             }
         });
@@ -319,9 +308,44 @@ var installPolicyCons = function (policy, targetFn) {
     }
 }
 
+/**
+ * This function is intended to be used for external enforcement mechanisms. The idea is that
+ * the provided mechanism call it with the runtime information and guardia should take care of
+ * determining the permissions.
+ *
+ * @param {Object | Function} tar
+ * @param {String} prop
+ * @param {Object} rec
+ * @param {*} args
+ * @param {String} hook
+ */
 
+const enforce = (tar, prop, rec, args, hook) => {
+    if (targets.has(tar)) { // if we already have registered a secured object
+        var pols = Array.from(targets.get(tar))
+        for (var pol of pols) {
+            for (var rpol of pol[hook]) {
+                if (!rpol.filter(tar, prop, rec, args))
+                    return false;
+            }
+        }
+    }
+    return true;
+}
 
-exports.installPolicy = installPolicyX;
+const install = (pol, tar) => {
+    if (targets.has(tar)) {
+        var x = targets.get(tar)
+        x.add(pol);
+        targets.set(tar, x);
+    } else {
+        var t = new Set()
+        t.add(pol)
+        targets.set(tar, t);
+    }
+}
+
+exports.installPolicy = installPolicy;
 exports.installPolicyCons = installPolicyCons;
 exports.Allow = Allow;
 exports.Deny = Deny;
@@ -334,3 +358,7 @@ exports.StateFnParam = StateFnParam;
 exports.setState = setState;
 exports.getState = getState;
 exports.getVType = getVType;
+
+//this needs to be tested yet
+exports.enforce = enforce;
+exports.installOn = install;

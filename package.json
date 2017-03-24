@@ -6,8 +6,9 @@
   "scripts": {
     "test": "mocha"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Angel Luis Scull Pupo",
+  "email": "ascullpu@vub.ac.be",
+  "license": "MIT",
   "dependencies": {
     "browser-env": "^2.0.21",
     "harmony-reflect": "^1.5.0",
