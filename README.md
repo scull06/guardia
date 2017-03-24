@@ -24,7 +24,7 @@ const G = require('./guardia');
 Guardia's API comprises a set of properties and a set of combinators that allows to compose those properties in more complex ones.
 
 Construct | Description
--------------------------------------|-----------------------------------------------------
+-----------------------------------------|-----------------------------------------------------
 Allow(arr : Array<String>) => TBase | Allow the execution of the supplied properties 
 Deny(arr :  Array<String>) => TBase | Deny the execution of the supplied properties 
 Not(p:  TBase) => TBase | Negates the result of the policy given as parameter
