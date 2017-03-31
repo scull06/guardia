@@ -2,7 +2,7 @@
   "name": "guardia",
   "version": "1.0.0",
   "description": "Javascript Security Library",
-  "main": "index.js",
+  "main": "guardia.js",
   "scripts": {
     "test": "mocha"
   },
@@ -10,9 +10,10 @@
   "email": "ascullpu@vub.ac.be",
   "license": "MIT",
   "dependencies": {
-    "browser-env": "^2.0.21",
-    "harmony-reflect": "^1.5.0",
-    "lodash": "^4.16.3",
     "traits.js": "^1.0.3"
+  },
+  "devDependencies": {
+    "lodash": "^4.17.4",
+    "browser-env": "^2.0.21"    
   }
 }

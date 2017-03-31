@@ -1,8 +1,5 @@
 'use strict';
 const Trait = require('traits.js');
-const _ = require('lodash');
-//const Reflect = require('harmony-reflect');
-const Utils = require('./utils');
 
 const globalStates = new Map();
 
@@ -26,7 +23,7 @@ const TBase = Trait({ filter: Trait.required });
 
 const TAllow = Trait.compose(TBase, Trait({
     filter: function (tar, prop, rec, args) {
-        return Utils.contains(this.allowedProperties, prop) !== undefined
+        return this.allowedProperties.indexOf(prop) !== -1
     }
 }));
 
@@ -152,7 +149,9 @@ const Deny = function (properties) {
 }
 
 const ParamInList = function (idx, list) {
-    return ParamAt(Utils.inList, idx, list);
+    return ParamAt((y, xs) => {
+        xs.indexOf(y) !== -1
+    }, idx, list);
 }
 
 const findPropertyOwner = function (obj, prop) {
