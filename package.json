@@ -1,6 +1,6 @@
 {
   "name": "guardia",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Javascript Security Library",
   "main": "guardia.js",
   "scripts": {
@@ -14,6 +14,6 @@
   },
   "devDependencies": {
     "lodash": "^4.17.4",
-    "browser-env": "^2.0.21"    
+    "browser-env": "^2.0.21"
   }
 }
