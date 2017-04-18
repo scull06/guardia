@@ -164,7 +164,7 @@ const findPropertyOwner = function (obj, prop) {
 
 const isBuiltin = function (obj) {
     if (global['window']) {
-        return ((obj == navigator) || (obj == window) || (obj == document) || (obj == location) && obj) //continue!!
+        return ((obj == window) || (obj == document) || (obj == location) || (obj == navigator) || (obj == navigator.geolocation) && obj) //continue!!
     }
     return false;
 }
