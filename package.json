@@ -1,6 +1,6 @@
 {
   "name": "guardia",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Javascript Security Library",
   "main": "guardia.js",
   "scripts": {
