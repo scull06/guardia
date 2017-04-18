@@ -164,7 +164,7 @@ const findPropertyOwner = function (obj, prop) {
 
 const isBuiltin = function (obj) {
     if (global['window']) {
-        return ((obj == window) || (obj == document) || (obj == location) && obj) //continue!!
+        return ((obj == navigator) || (obj == window) || (obj == document) || (obj == location) && obj) //continue!!
     }
     return false;
 }
@@ -277,7 +277,7 @@ const installPolicy = (policy) => {
                                 }
                             }
                         }
-                        notify(policy['writesListeners'], target, property, undefined, value);
+                        notify(policy['writeListeners'], target, property, undefined, value);
                         return Reflect.set(target, property, value, receiver);
                     }
                 });
@@ -342,6 +342,25 @@ const install = (pol, tar) => {
         t.add(pol)
         targets.set(tar, t);
     }
+}
+
+/**
+ * for installing policies on functions
+ * pd should { listeners : [] , execPol: []}
+ */
+const installOnFunction = (pd, fn) => {
+    if (tgt instanceof Function) {
+        let fnProxy = new Proxy(fn, {
+            apply: function (target, thisArg, argumentsList) {
+                if (pd.enforce(target, thisArg, argumentsList)) {
+                    throw new Error('Not Allowed');
+                }
+                return Reflect.apply(target, thisArg, argumentsList);
+            }
+        });
+        return fnProxy;
+    }
+    throw new Error('Not a function');
 }
 
 exports.installPolicy = installPolicy;

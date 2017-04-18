@@ -8,10 +8,7 @@ Javascript library for the Specification and Enforcement of Security Policies at
 ## Install
 GUARDIA depends on some external libraries. Make sure you include these libraries before guardia:
 
-- lodash   @ npm
 - trait.js @ npm
-- utils.js (included in the guardia repo)
-- guardia.js (included in the guardia repo)
 
 ## Usage
 
