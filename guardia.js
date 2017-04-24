@@ -135,7 +135,7 @@ const Or = function (...policies) {
     })))
 }
 
- const Allow = function (properties) {
+const Allow = function (properties) {
     var proto = basePrototype();
     proto.allowedProperties = properties;
     var allowedPropPolicy = Trait.create(proto, TAllow);
@@ -234,14 +234,13 @@ const installPolicy = (policy) => {
                     fnProxy.toString = Function
                         .prototype
                         .toString
-                        .bind(target[method]) //Proxies invariants flaws!!!!
-
+                        .bind(target[method]); //Proxies invariants flaws!!!!
+                    //This can affect transparency but 'figth' against re-attaching functions
                     Object.defineProperty(target, method, {
                         configurable: false,
                         writable: false,
                         value: fnProxy
                     })
-                   // target[method] = fnProxy;
                 }
 
                 return target;
