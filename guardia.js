@@ -135,7 +135,7 @@ const Or = function (...policies) {
     })))
 }
 
-export const Allow = function (properties) {
+ const Allow = function (properties) {
     var proto = basePrototype();
     proto.allowedProperties = properties;
     var allowedPropPolicy = Trait.create(proto, TAllow);
@@ -371,7 +371,7 @@ const installOnFunction = (pd, fn) => {
 
 exports.installPolicy = installPolicy;
 exports.installPolicyCons = installPolicyCons;
-//exports.Allow = Allow;
+exports.Allow = Allow;
 exports.Deny = Deny;
 exports.And = And;
 exports.Or = Or;
