@@ -135,7 +135,7 @@ const Or = function (...policies) {
     })))
 }
 
-const Allow = function (properties) {
+export const Allow = function (properties) {
     var proto = basePrototype();
     proto.allowedProperties = properties;
     var allowedPropPolicy = Trait.create(proto, TAllow);
@@ -235,7 +235,13 @@ const installPolicy = (policy) => {
                         .prototype
                         .toString
                         .bind(target[method]) //Proxies invariants flaws!!!!
-                    target[method] = fnProxy;
+
+                    Object.defineProperty(target, method, {
+                        configurable: false,
+                        writable: false,
+                        value: fnProxy
+                    })
+                   // target[method] = fnProxy;
                 }
 
                 return target;
@@ -365,7 +371,7 @@ const installOnFunction = (pd, fn) => {
 
 exports.installPolicy = installPolicy;
 exports.installPolicyCons = installPolicyCons;
-exports.Allow = Allow;
+//exports.Allow = Allow;
 exports.Deny = Deny;
 exports.And = And;
 exports.Or = Or;
