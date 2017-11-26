@@ -12,7 +12,9 @@ const setState = (key, value) => {
 }
 
 const basePrototype = () => {
-    return {};
+    let proto = {}
+    Object.setPrototypeOf(proto,null);
+    return proto;
 }
 
 const targets = new WeakMap();
@@ -20,6 +22,8 @@ const targets = new WeakMap();
 // I dont know if I should use let or const for this.. I'll see implications
 // later!!!
 const TBase = Trait({ filter: Trait.required });
+
+Object.setPrototypeOf(TBase, basePrototype())
 
 const TAllow = Trait.compose(TBase, Trait({
     filter: function (tar, prop, rec, args) {
@@ -237,6 +241,7 @@ const installPolicy = (policy) => {
                         .bind(target[method]); //Proxies invariants flaws!!!!
                     //This can affect transparency but 'figth' against re-attaching functions
                     Object.defineProperty(target, method, {
+                        __proto__:null,
                         configurable: false,
                         writable: false,
                         value: fnProxy
