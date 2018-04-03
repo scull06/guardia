@@ -4,7 +4,8 @@
   "description": "Javascript Security Library",
   "main": "guardia.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha test/html/bootstrap.js test/html/",
+    "server": "http-server test/html/src"
   },
   "author": "Angel Luis Scull Pupo",
   "email": "ascullpu@vub.ac.be",
@@ -13,7 +14,8 @@
     "traits.js": "^1.0.3"
   },
   "devDependencies": {
+    "browser-env": "^2.0.21",
     "lodash": "^4.17.4",
-    "browser-env": "^2.0.21"
+    "puppeteer": "^1.2.0"
   }
 }

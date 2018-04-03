@@ -1,7 +1,10 @@
 'use strict';
 require('browser-env')();
 var assert = require('assert');
-var ac = require('../guardia');
+
+var ac = require('../../guardia');
+var enfc = require('../../enforcement/proxy')
+
 
 let liar = {
     value: 'div',
@@ -15,7 +18,7 @@ let liar = {
 describe('Guardia Access Control [ParamAt]', function () {
     describe('#ParamAt', function () {
 
-        document = ac.installPolicy({
+        document = enfc.installPolicy({
             whenRead: [ac.Not(ac.And(ac.Allow(['createElement']), ac.ParamAt((a, b) => {
                     return a === b
                 }, ac.getVType(0,String), 'iframe')))]
