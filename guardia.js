@@ -158,6 +158,20 @@ const ParamInList = function (idx, list) {
     }, idx, list);
 }
 
+//For Information Flow Control
+
+
+
+/**
+ * 
+ * @param {*} target Target value 
+ * @param {*} label  Security label
+ */
+
+const tagAsSource = (target, label) => {
+    
+}
+
 
 exports.Allow = Allow;
 exports.Deny = Deny;
